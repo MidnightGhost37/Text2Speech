@@ -1,0 +1,38 @@
+<! DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta
+            name="viewport"
+            content="width = device-width, initial-scale = 1.0"
+        />
+        <title>Mtume Sings</title>
+    </head>
+
+    <body>
+        <h1>Welcome to Mtume Sings</h1>
+        <p>Testing mode for the application</p>
+        <div name="Button_Data">
+            <form action="/speech_converter" method="POST">
+                <label for="lyrics">Enter your lyrics here:</label>
+                <br>
+                <textarea
+                    id="lyrics"
+                    name="lyrics"
+                    rows="4"
+                    cols="50"
+                ></textarea>
+                </br>
+                <button type="submit">Convert your lyrics into a song</button>
+            </form>
+        </div>
+
+        {% if filename %}
+        <p name="">Your song is ready to be downloaded!</p>
+        <div id="download-section">
+            <a href="/voice_files/{{ filename }}.mp3">Download your song</a>
+        </div>
+        {% endif %}
+
+    </body>
+</html>
