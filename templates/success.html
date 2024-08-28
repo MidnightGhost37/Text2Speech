@@ -1,4 +1,4 @@
-<! DOCTYPE html>
+<!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
@@ -10,14 +10,17 @@
     </head>
 
     <body>
+        <script src="/static/js/success.js"></script>
+
         <div name="Success">
-            <p>Your song is ready and downloaded!</p>
-            <p>Redirecting...</p>
-            <script>
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 2000);
-            </script>
+            <p>Your song is ready to be downloaded!</p>
+            <a href="/voice_files/{{ filename }}.mp3" onclick="redirect()"
+                >Download your song</a
+            >
+        </div>
+
+        <div name="Return_Back">
+            <button onclick="go_back_page()">Return to the homepage</button>
         </div>
     </body>
 </html>

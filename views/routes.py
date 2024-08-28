@@ -1,12 +1,12 @@
-from flask import Blueprint, render_template, request, make_response, send_file, redirect
+from flask import Blueprint, render_template, request, make_response, send_file, redirect, jsonify
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers.response import Response
 from utils import tools
 import pyttsx3, os, string
 from time import sleep
 
-
 main = Blueprint('main', __name__)
+
 
 @main.route('/', methods=['GET', 'POST'])
 def index():
@@ -15,6 +15,21 @@ def index():
 @main.route('/about', methods=['GET'])
 def about():
     return render_template('about.html')
+
+@main.route("/register", methods=['GET', 'POST'])
+def register():
+    if request.method == 'GET':
+        return render_template('register.html')
+
+    data = request.get_json()
+    username, email, password = data['username'], data['email'], data['password']
+
+    from __main__ import db_app, create_user;
+    sql_alchemy_session = db_app.session
+    object = create_user(username, email, password, sql_alchemy_session);
+    message, reset_token = object if type(object) == tuple else (object, None)
+
+    return jsonify({"message": message, "reset_token": reset_token}) if reset_token else jsonify({"message": message})
 
 @main.route('/speech_converter', methods=['POST'])
 def speech_converter():
@@ -33,10 +48,9 @@ def speech_converter():
         engine.runAndWait()
 
         # Redirect to success page
-        return render_template('index.html', filename=filename)
+        return render_template('success.html', filename=filename)
     else:
         return render_template("error.html", error_name="No text provided")
-
 
 @main.route('/voice_files/<filename>', methods=['GET'])
 def filename_download(filename: str):
@@ -47,7 +61,6 @@ def filename_download(filename: str):
         return render_template("error.html", error_name="File not found")
 
     return send_file(file_path, as_attachment=True)
-
 
 @main.route("/success")
 def success(filename:str)->str:
