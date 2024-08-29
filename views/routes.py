@@ -1,26 +1,29 @@
-from flask import Blueprint, render_template, request, make_response, send_file, redirect, jsonify
+from flask import Blueprint, render_template, request, make_response, send_file, redirect, jsonify, Response
 from werkzeug.utils import secure_filename
 from werkzeug.wrappers.response import Response
+from werkzeug.exceptions import HTTPException
 from utils import tools
-import pyttsx3, os, string
+import pyttsx3, os, string, json
 from time import sleep
-from views.auth_app import create_jwt_token, login_required
-
-
+from views.auth_app import create_jwt_token
+from flask_jwt_extended import (
+    JWTManager, jwt_required, create_access_token,
+    get_jwt_identity, set_access_cookies, unset_jwt_cookies
+)
 
 main = Blueprint('main', __name__)
 
 @main.route('/sings', methods=['GET', 'POST'])
+@jwt_required()
 def index():
     return render_template('index.html')
 
-@login_required
 @main.route('/', methods=['GET'])
 def home():
-    if request.cookies.get('JWT'):
-        return redirect('/sings')
-
-    return redirect('/login')
+    try:
+        return redirect('/sings') if get_jwt_identity() else redirect('/login')
+    except:
+        return redirect("/login")
 
 @main.route('/about', methods=['GET'])
 def about():
@@ -43,8 +46,10 @@ def register():
 
 @main.route("/login", methods=['GET', 'POST'])
 def login():
-    if request.method == 'GET':
+    if request.method == 'GET' and not request.headers.get('Authorization'):
         return render_template('login.html')
+    elif request.method == 'GET' and request.headers.get('Authorization'):
+        return redirect('/sings')
 
     data = request.get_json()
     username, password = data['username'], data['password']
@@ -56,10 +61,12 @@ def login():
         return jsonify({"error": "User authentication failed!: Check your username and password"})
 
     token = create_jwt_token(username)
-    return jsonify({"message": "User authenticated successfully!", "token": token})
-
+    response = Response(json.dumps({"message": "User authenticated successfully!", "token": token}), status=200, mimetype='application/json')
+    set_access_cookies(response, token)
+    return response,200
 
 @main.route('/speech_converter', methods=['POST'])
+@jwt_required()
 def speech_converter():
     engine = pyttsx3.init()
 
@@ -81,6 +88,7 @@ def speech_converter():
         return render_template("error.html", error_name="No text provided")
 
 @main.route('/voice_files/<filename>', methods=['GET'])
+@jwt_required()
 def filename_download(filename: str):
     filename = secure_filename(filename)
     file_path = os.path.join("voices_files", filename)
@@ -91,5 +99,6 @@ def filename_download(filename: str):
     return send_file(file_path, as_attachment=True)
 
 @main.route("/success")
+@jwt_required()
 def success(filename:str)->str:
     return render_template('success.html')

@@ -49,10 +49,10 @@ function login() {
         message_block("login_message", data.message);
         reset_block("login_message");
 
+        // Redirect to home page
         setTimeout(() => {
-          localStorage.setItem("JWT", data.token);
           window.location.href = "/sings";
-        }, 5000);
+        }, 2000);
       }
     });
 }
