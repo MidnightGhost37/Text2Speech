@@ -4,13 +4,23 @@ from werkzeug.wrappers.response import Response
 from utils import tools
 import pyttsx3, os, string
 from time import sleep
+from views.auth_app import create_jwt_token, login_required
+
+
 
 main = Blueprint('main', __name__)
 
-
-@main.route('/', methods=['GET', 'POST'])
+@main.route('/sings', methods=['GET', 'POST'])
 def index():
     return render_template('index.html')
+
+@login_required
+@main.route('/', methods=['GET'])
+def home():
+    if request.cookies.get('JWT'):
+        return redirect('/sings')
+
+    return redirect('/login')
 
 @main.route('/about', methods=['GET'])
 def about():
@@ -30,6 +40,24 @@ def register():
     message, reset_token = object if type(object) == tuple else (object, None)
 
     return jsonify({"message": message, "reset_token": reset_token}) if reset_token else jsonify({"message": message})
+
+@main.route("/login", methods=['GET', 'POST'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+
+    data = request.get_json()
+    username, password = data['username'], data['password']
+
+    from __main__ import db_app, get_user, encrypt_password, jwt;
+    sql_alchemy_session = db_app.session
+    user = get_user(username, sql_alchemy_session)
+    if (not user) or (user.Password != encrypt_password(password)):
+        return jsonify({"error": "User authentication failed!: Check your username and password"})
+
+    token = create_jwt_token(username)
+    return jsonify({"message": "User authenticated successfully!", "token": token})
+
 
 @main.route('/speech_converter', methods=['POST'])
 def speech_converter():

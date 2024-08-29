@@ -11,8 +11,7 @@ function message_block(tag_name, message, count = 5) {
 
   const intervalId = setInterval(() => {
     count--;
-    message_tag.innerHTML =
-      message + `<br> Disappearing in ${count} seconds </br>`;
+    message_tag.innerHTML = message;
 
     if (count === 0) {
       clearInterval(intervalId);
@@ -62,10 +61,13 @@ function register() {
             15,
           );
           reset_block("reset_token", 15);
+          setTimeout(() => {
+            window.location.href = "/login";
+          }, 15000);
         }
 
-        message_block("reg_message", data.message, 5);
-        reset_block("reg_message");
+        message_block("reg_message", data.message, 3);
+        reset_block("reg_message", 3);
       })
       .catch((error) => {
         message_block("reg_message", error, 5);

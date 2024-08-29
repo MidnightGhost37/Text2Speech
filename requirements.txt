@@ -3,3 +3,5 @@ Flask
 sqlalchemy
 dotenv
 pymysql
+PyJWT
+Flask-JWT-Extended
