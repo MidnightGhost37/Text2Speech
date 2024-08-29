@@ -1,6 +1,6 @@
 function redirect() {
   setTimeout(() => {
-    window.location.href = "/";
+    window.location.href = "/sings";
   }, 2000);
 }
 

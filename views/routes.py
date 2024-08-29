@@ -65,6 +65,22 @@ def login():
     set_access_cookies(response, token)
     return response,200
 
+@main.route("/reset_pass", methods=['GET', 'POST'])
+def reset_password():
+    if request.method == 'GET':
+        return render_template('reset_pass.html')
+
+    data = request.get_json()
+    username, password, reset_token = data['username'], data['password'], data['reset_token']
+
+    if not username or not password or not reset_token:
+        return jsonify({"error": "Invalid data provided!"})
+
+    from __main__ import db_app, reset_password;
+    sql_alchemy_session = db_app.session
+    message = reset_password(username, password, reset_token, sql_alchemy_session)
+    return jsonify({"message": message}) if 'Invalid' not in message else jsonify({"error": message})
+
 @main.route('/speech_converter', methods=['POST'])
 @jwt_required()
 def speech_converter():

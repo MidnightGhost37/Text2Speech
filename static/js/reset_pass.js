@@ -19,16 +19,30 @@ function message_block(tag_name, message, count = 5) {
   }, 1000);
 }
 
-function login() {
+function reset_pass() {
   let username = document.getElementById("username").value;
-  let password = document.getElementById("password").value;
-  if (username === "" || password === "") {
-    message_block("login_message", "Please fill all fields", 5);
-    reset_block("login_message", 5);
+  let password = document.getElementById("new_password").value;
+  let confirm_password = document.getElementById("confirm_password").value;
+  let reset_token = document.getElementById("reset_token").value;
+
+  if (confirm_password !== password) {
+    message_block("reset_pass_message", "Passwords do not match!", 5);
+    reset_block("reset_pass_message", 5);
     return;
   }
 
-  fetch("/login", {
+  if (
+    username === "" ||
+    password === "" ||
+    confirm_password === "" ||
+    reset_token === ""
+  ) {
+    message_block("reset_pass_message", "Please fill all fields", 5);
+    reset_block("reset_pass_message", 5);
+    return;
+  }
+
+  fetch("/reset_pass", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -36,6 +50,7 @@ function login() {
     body: JSON.stringify({
       username: username,
       password: password,
+      reset_token: reset_token,
     }),
   })
     .then((response) => {
@@ -43,15 +58,15 @@ function login() {
     })
     .then((data) => {
       if (data.error) {
-        message_block("login_message", data.error, 1);
-        reset_block("login_message", 1);
+        message_block("reset_pass_message", data.error);
+        reset_block("reset_pass_message");
       } else {
-        message_block("login_message", data.message, 2);
-        reset_block("login_message", 2);
+        message_block("reset_pass_message", data.message);
+        reset_block("reset_pass_message");
 
-        // Redirect to home page
+        // Redirect to login page
         setTimeout(() => {
-          window.location.href = "/sings";
+          window.location.href = "/login";
         }, 2000);
       }
     });

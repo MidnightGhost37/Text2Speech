@@ -35,8 +35,9 @@ def create_user(username:str, email:str, password:str, sql_alchemy_session)->tup
 
 # Function to reset a user's password
 def reset_password(username:str, new_password:str, reset_token:str, sql_alchemy_session)->str:
-    if not ( sql_alchemy_session.query(User).filter(User.ResetToken == reset_token).first()):
-        return "Invalid reset token"
+
+    if not ( (sql_alchemy_session.query(User).filter(User.ResetToken == reset_token).first()) and (sql_alchemy_session.query(User).filter(User.Username == username).first())):
+        return "Invalid credentials"
 
     user = sql_alchemy_session.query(User).filter(User.Username == username).first()
     new_password = sha256(new_password.encode()).hexdigest()

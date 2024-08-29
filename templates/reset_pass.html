@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Reset Password | Mtume Sings</title>
+    </head>
+
+    <body>
+        <script src="/static/js/reset_pass.js"></script>
+
+        <h1>Reset Password</h1>
+        <div name="messages">
+            <div name="reset_pass_message" style="display: none">
+                <p id="reset_pass_message"></p>
+            </div>
+        </div>
+
+        <div name="username">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required />
+        </div>
+
+        <div name="reset_token">
+            <label for="reset_token">Reset Token:</label>
+            <input type="text" id="reset_token" name="reset_token" required />
+        </div>
+
+        <div name="new_password">
+            <label for="new_password">New Password:</label>
+            <input
+                type="password"
+                id="new_password"
+                name="new_password"
+                required
+            />
+        </div>
+
+        <div name="confirm_password">
+            <label for="confirm_password">Confirm Password:</label>
+            <input
+                type="password"
+                id="confirm_password"
+                name="confirm_password"
+                required
+            />
+            <p id="password_match"></p>
+        </div>
+
+        <div name="reset_pass_button">
+            <button type="submit" onclick="reset_pass()">Reset Password</button>
+        </div>
+
+        <div name="login">
+            <a href="/login">Already have an account? Login here</a>
+        </div>
+
+        <div name="register">
+            <a href="/register">Don't have an account? Register here</a>
+        </div>
+    </body>
+</html>
