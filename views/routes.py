@@ -20,10 +20,7 @@ def index():
 
 @main.route('/', methods=['GET'])
 def home():
-    try:
-        return redirect('/sings') if get_jwt_identity() else redirect('/login')
-    except:
-        return redirect("/login")
+    return redirect('/sings')
 
 @main.route('/about', methods=['GET'])
 def about():
